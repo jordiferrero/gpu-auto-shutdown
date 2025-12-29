@@ -1,0 +1,20 @@
+[Unit]
+Description=GPU Auto-Shutdown Monitor
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/gpu-monitor.sh
+Restart=on-failure
+RestartSec=30
+
+# Configuration - edit these values as needed
+Environment="CHECK_INTERVAL=60"
+Environment="BUFFER_TIME=20"
+Environment="HIGH_USAGE_THRESHOLD=50"
+Environment="LOW_USAGE_THRESHOLD=5"
+Environment="MIN_HIGH_DURATION=5"
+Environment="LOG_FILE=/var/log/gpu-monitor.log"
+
+[Install]
+WantedBy=multi-user.target
