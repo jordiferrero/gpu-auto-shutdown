@@ -13,7 +13,7 @@ This service monitors GPU usage. When usage drops from high to low and stays low
 ## Install
 
 ```bash
-git clone https://github.com/yourusername/gpu-auto-shutdown.git
+git clone https://github.com/jordiferrero/gpu-auto-shutdown.git
 cd gpu-auto-shutdown
 sudo ./install.sh
 ```
@@ -39,6 +39,7 @@ sudo nano /etc/systemd/system/gpu-monitor.service
 | `HIGH_USAGE_THRESHOLD` | 50 | GPU % considered "high" |
 | `LOW_USAGE_THRESHOLD` | 5 | GPU % considered "low" |
 | `MIN_HIGH_DURATION` | 5 | Minutes GPU must be high first |
+| `CHECK_CLOUD_INSTANCE` | true | Verify running on cloud instance before shutdown (prevents accidental local shutdown) |
 
 After editing:
 
@@ -59,15 +60,18 @@ sudo systemctl start gpu-monitor # Start
 ## Requirements
 
 - Linux with systemd
-- NVIDIA GPU with `nvidia-smi`
+- NVIDIA GPU(s) with `nvidia-smi` installed
+- Root/sudo access for installation
 
 ## How It Works
 
-1. Monitors GPU usage every 60 seconds
+1. Monitors GPU usage every 60 seconds (averages across all GPUs if multiple are present)
 2. Waits for GPU to be "high" (>50%) for at least 5 minutes (your job is running)
 3. When GPU drops to "low" (<5%), starts countdown
 4. If GPU stays low for 20 minutes, shuts down instance
 5. If GPU usage increases, countdown resets
+
+**Multi-GPU Support**: If you have multiple GPUs, the monitor averages the usage across all GPUs. The shutdown logic applies to the average usage.
 
 The instance shutdown stops billing on all cloud providers (AWS, GCP, Azure, etc).
 
